@@ -27,6 +27,7 @@ jobs:
           AWS_BUCKET: testing-flydrive
   windows:
     runs-on: windows-latest
+    needs: linux
     strategy:
       matrix:
         node-version:
