@@ -20,6 +20,11 @@ jobs:
         run: npm install
       - name: Run tests
         run: npm test
+        env:
+          AWS_KEY: ${{ secrets.AWS_KEY }}
+          AWS_SECRET: ${{ secrets.AWS_SECRET }}
+          AWS_ENDPOINT: https://sgp1.digitaloceanspaces.com
+          AWS_BUCKET: testing-flydrive
   windows:
     runs-on: windows-latest
     strategy:
@@ -37,3 +42,8 @@ jobs:
         run: npm install
       - name: Run tests
         run: npm test
+        env:
+          AWS_KEY: ${{ secrets.AWS_KEY }}
+          AWS_SECRET: ${{ secrets.AWS_SECRET }}
+          AWS_ENDPOINT: https://sgp1.digitaloceanspaces.com
+          AWS_BUCKET: testing-flydrive
