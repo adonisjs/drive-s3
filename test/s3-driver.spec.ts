@@ -9,6 +9,7 @@
 
 import got from 'got'
 import test from 'japa'
+import dotenv from 'dotenv'
 import { join } from 'path'
 import { Filesystem } from '@poppinss/dev-utils'
 import { HeadObjectCommand } from '@aws-sdk/client-s3'
@@ -16,14 +17,21 @@ import { HeadObjectCommand } from '@aws-sdk/client-s3'
 import { S3Driver } from '../src/Drivers/S3'
 
 const fs = new Filesystem(join(__dirname, '__app'))
+dotenv.config()
+
+const AWS_KEY = process.env.AWS_KEY!
+const AWS_SECRET = process.env.AWS_SECRET!
+const AWS_BUCKET = process.env.AWS_BUCKET!
+const AWS_ENDPOINT = process.env.AWS_ENDPOINT!
 
 test.group('S3 driver | put', () => {
   test('write file to the destination', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -40,10 +48,11 @@ test.group('S3 driver | put', () => {
 
   test('write to nested path', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -59,10 +68,11 @@ test.group('S3 driver | put', () => {
 
   test('overwrite destination when already exists', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -79,10 +89,11 @@ test.group('S3 driver | put', () => {
 
   test('set custom content-type for the file', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -94,7 +105,7 @@ test.group('S3 driver | put', () => {
     })
 
     const response = await driver.adapter.send(
-      new HeadObjectCommand({ Key: 'foo.txt', Bucket: 'testing-flydrive' })
+      new HeadObjectCommand({ Key: 'foo.txt', Bucket: AWS_BUCKET })
     )
 
     assert.equal(response.ContentType, 'application/json')
@@ -109,10 +120,11 @@ test.group('S3 driver | putStream', (group) => {
 
   test('write file to the destination', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -130,10 +142,11 @@ test.group('S3 driver | putStream', (group) => {
 
   test('write to nested path', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -151,10 +164,11 @@ test.group('S3 driver | putStream', (group) => {
 
   test('overwrite destination when already exists', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -173,10 +187,11 @@ test.group('S3 driver | putStream', (group) => {
 
   test('set custom content-type for the file', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -189,7 +204,7 @@ test.group('S3 driver | putStream', (group) => {
     })
 
     const response = await driver.adapter.send(
-      new HeadObjectCommand({ Key: 'foo.txt', Bucket: 'testing-flydrive' })
+      new HeadObjectCommand({ Key: 'foo.txt', Bucket: AWS_BUCKET })
     )
     assert.equal(response.ContentType, 'application/json')
 
@@ -200,10 +215,11 @@ test.group('S3 driver | putStream', (group) => {
 test.group('S3 driver | exists', () => {
   test('return true when a file exists', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -218,10 +234,11 @@ test.group('S3 driver | exists', () => {
 
   test("return false when a file doesn't exists", async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -232,10 +249,11 @@ test.group('S3 driver | exists', () => {
 
   test("return false when a file parent directory doesn't exists", async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -250,8 +268,9 @@ test.group('S3 driver | exists', () => {
     const config = {
       key: 'foo',
       secret: 'bar',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -272,10 +291,11 @@ test.group('S3 driver | delete', (group) => {
 
   test('remove file', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -289,10 +309,11 @@ test.group('S3 driver | delete', (group) => {
 
   test('do not error when trying to remove a non-existing file', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -304,10 +325,11 @@ test.group('S3 driver | delete', (group) => {
 
   test("do not error when file parent directory doesn't exists", async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -326,10 +348,11 @@ test.group('S3 driver | copy', (group) => {
 
   test('copy file from within the disk root', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -348,10 +371,11 @@ test.group('S3 driver | copy', (group) => {
 
   test('create intermediate directories when copying a file', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -372,10 +396,11 @@ test.group('S3 driver | copy', (group) => {
     assert.plan(1)
 
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -394,10 +419,11 @@ test.group('S3 driver | copy', (group) => {
 
   test('overwrite destination when already exists', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -417,10 +443,11 @@ test.group('S3 driver | copy', (group) => {
 
   test('retain source acl during copy', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -439,10 +466,11 @@ test.group('S3 driver | copy', (group) => {
 
   test('retain source content-type during copy', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -453,7 +481,7 @@ test.group('S3 driver | copy', (group) => {
     await driver.copy('foo.txt', 'bar.txt')
 
     const metaData = await driver.adapter.send(
-      new HeadObjectCommand({ Key: 'bar.txt', Bucket: 'testing-flydrive' })
+      new HeadObjectCommand({ Key: 'bar.txt', Bucket: AWS_BUCKET })
     )
     assert.equal(metaData.ContentType, 'application/json')
 
@@ -469,10 +497,11 @@ test.group('S3 driver | move', (group) => {
 
   test('move file from within the disk root', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -491,10 +520,11 @@ test.group('S3 driver | move', (group) => {
 
   test('create intermediate directories when moving a file', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -515,10 +545,11 @@ test.group('S3 driver | move', (group) => {
     assert.plan(1)
 
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -537,10 +568,11 @@ test.group('S3 driver | move', (group) => {
 
   test('overwrite destination when already exists', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -560,10 +592,11 @@ test.group('S3 driver | move', (group) => {
 
   test('retain source acl during move', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -581,10 +614,11 @@ test.group('S3 driver | move', (group) => {
 
   test('retain source content-type during move', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -595,7 +629,7 @@ test.group('S3 driver | move', (group) => {
     await driver.move('foo.txt', 'bar.txt')
 
     const metaData = await driver.adapter.send(
-      new HeadObjectCommand({ Key: 'bar.txt', Bucket: 'testing-flydrive' })
+      new HeadObjectCommand({ Key: 'bar.txt', Bucket: AWS_BUCKET })
     )
     assert.equal(metaData.ContentType, 'application/json')
 
@@ -610,10 +644,11 @@ test.group('S3 driver | get', (group) => {
 
   test('get file contents', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -631,10 +666,11 @@ test.group('S3 driver | get', (group) => {
     assert.plan(1)
 
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -654,10 +690,11 @@ test.group('S3 driver | get', (group) => {
   test("return error when file doesn't exists", async (assert) => {
     assert.plan(1)
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -681,10 +718,11 @@ test.group('S3 driver | getStats', (group) => {
 
   test('get file stats', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -703,10 +741,11 @@ test.group('S3 driver | getStats', (group) => {
     assert.plan(1)
 
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -731,10 +770,11 @@ test.group('S3 driver | getVisibility', (group) => {
 
   test('get visibility for private file', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -750,10 +790,11 @@ test.group('S3 driver | getVisibility', (group) => {
 
   test('get visibility for public file', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'public' as const,
     }
@@ -771,10 +812,11 @@ test.group('S3 driver | getVisibility', (group) => {
     assert.plan(1)
 
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -799,10 +841,11 @@ test.group('S3 driver | setVisibility', (group) => {
 
   test('set file visibility', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -821,10 +864,11 @@ test.group('S3 driver | setVisibility', (group) => {
     assert.plan(1)
 
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -849,10 +893,11 @@ test.group('S3 driver | getUrl', (group) => {
 
   test('get url to a given file', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'public' as const,
     }
@@ -871,10 +916,11 @@ test.group('S3 driver | getUrl', (group) => {
     assert.plan(1)
 
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -903,10 +949,11 @@ test.group('Local driver | getSignedUrl', (group) => {
     assert.plan(2)
 
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -928,10 +975,11 @@ test.group('Local driver | getSignedUrl', (group) => {
 
   test('define custom content headers for the file', async (assert) => {
     const config = {
-      key: '6CMRUND65ATGXGJ6MUOV',
-      secret: '7KySP+errsSVDprUL/BJmDdo662jxfQ1bXztbL7Kf8E',
-      bucket: 'testing-flydrive',
-      endpoint: 'https://sgp1.digitaloceanspaces.com',
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
