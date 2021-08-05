@@ -6,6 +6,7 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 1
       matrix:
         node-version:
           - 14.17.0
@@ -29,6 +30,7 @@ jobs:
     runs-on: windows-latest
     needs: linux
     strategy:
+      max-parallel: 1
       matrix:
         node-version:
           - 14.17.0
