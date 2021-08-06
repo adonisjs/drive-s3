@@ -13,6 +13,7 @@ import dotenv from 'dotenv'
 import { join } from 'path'
 import { Filesystem } from '@poppinss/dev-utils'
 import { HeadObjectCommand } from '@aws-sdk/client-s3'
+import { string } from '@poppinss/utils/build/helpers'
 
 import { S3Driver } from '../src/Drivers/S3'
 
@@ -35,12 +36,14 @@ test.group('S3 driver | put', () => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('foo.txt', 'hello world')
-    await driver.getUrl('foo.txt')
 
-    const contents = await driver.get('foo.txt')
+    await driver.put(fileName, 'hello world')
+    await driver.getUrl(fileName)
+
+    const contents = await driver.get(fileName)
     assert.equal(contents.toString(), 'hello world')
 
     await driver.delete('foo.txt')
@@ -56,14 +59,15 @@ test.group('S3 driver | put', () => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('bar/baz/foo.txt', 'hello world')
+    await driver.put(fileName, 'hello world')
 
-    const contents = await driver.get('bar/baz/foo.txt')
+    const contents = await driver.get(fileName)
     assert.equal(contents.toString(), 'hello world')
 
-    await driver.delete('bar/baz/foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('overwrite destination when already exists', async (assert) => {
@@ -76,15 +80,16 @@ test.group('S3 driver | put', () => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('bar/baz/foo.txt', 'hello world')
-    await driver.put('bar/baz/foo.txt', 'hi world')
+    await driver.put(fileName, 'hello world')
+    await driver.put(fileName, 'hi world')
 
-    const contents = await driver.get('bar/baz/foo.txt')
+    const contents = await driver.get(fileName)
     assert.equal(contents.toString(), 'hi world')
 
-    await driver.delete('bar/baz/foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('set custom content-type for the file', async (assert) => {
@@ -97,19 +102,20 @@ test.group('S3 driver | put', () => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.put('foo.txt', '{ "hello": "world" }', {
+    await driver.put(fileName, '{ "hello": "world" }', {
       contentType: 'application/json',
     })
 
     const response = await driver.adapter.send(
-      new HeadObjectCommand({ Key: 'foo.txt', Bucket: AWS_BUCKET })
+      new HeadObjectCommand({ Key: fileName, Bucket: AWS_BUCKET })
     )
 
     assert.equal(response.ContentType, 'application/json')
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 })
 
@@ -128,16 +134,17 @@ test.group('S3 driver | putStream', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
     await fs.add('foo.txt', 'hello stream')
     const stream = fs.fsExtra.createReadStream(join(fs.basePath, 'foo.txt'))
-    await driver.putStream('foo.txt', stream)
+    await driver.putStream(fileName, stream)
 
-    const contents = await driver.get('foo.txt')
+    const contents = await driver.get(fileName)
     assert.equal(contents.toString(), 'hello stream')
 
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('write to nested path', async (assert) => {
@@ -150,16 +157,17 @@ test.group('S3 driver | putStream', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
     await fs.add('foo.txt', 'hello stream')
     const stream = fs.fsExtra.createReadStream(join(fs.basePath, 'foo.txt'))
-    await driver.putStream('bar/baz/foo.txt', stream)
+    await driver.putStream(fileName, stream)
 
-    const contents = await driver.get('bar/baz/foo.txt')
+    const contents = await driver.get(fileName)
     assert.equal(contents.toString(), 'hello stream')
 
-    await driver.delete('bar/baz/foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('overwrite destination when already exists', async (assert) => {
@@ -172,17 +180,18 @@ test.group('S3 driver | putStream', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
     await fs.add('foo.txt', 'hi stream')
     const stream = fs.fsExtra.createReadStream(join(fs.basePath, 'foo.txt'))
-    await driver.put('bar/baz/foo.txt', 'hello world')
-    await driver.putStream('bar/baz/foo.txt', stream)
+    await driver.put(fileName, 'hello world')
+    await driver.putStream(fileName, stream)
 
-    const contents = await driver.get('bar/baz/foo.txt')
+    const contents = await driver.get(fileName)
     assert.equal(contents.toString(), 'hi stream')
 
-    await driver.delete('bar/baz/foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('set custom content-type for the file', async (assert) => {
@@ -195,20 +204,21 @@ test.group('S3 driver | putStream', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
     await fs.add('foo.txt', '{ "hello": "world" }')
     const stream = fs.fsExtra.createReadStream(join(fs.basePath, 'foo.txt'))
-    await driver.putStream('foo.txt', stream, {
+    await driver.putStream(fileName, stream, {
       contentType: 'application/json',
     })
 
     const response = await driver.adapter.send(
-      new HeadObjectCommand({ Key: 'foo.txt', Bucket: AWS_BUCKET })
+      new HeadObjectCommand({ Key: fileName, Bucket: AWS_BUCKET })
     )
     assert.equal(response.ContentType, 'application/json')
 
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 })
 
@@ -223,13 +233,14 @@ test.group('S3 driver | exists', () => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.put('bar/baz/foo.txt', 'bar')
-    assert.isTrue(await driver.exists('bar/baz/foo.txt'))
+    await driver.put(fileName, 'bar')
+    assert.isTrue(await driver.exists(fileName))
 
-    await driver.delete('bar/baz/foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test("return false when a file doesn't exists", async (assert) => {
@@ -242,9 +253,10 @@ test.group('S3 driver | exists', () => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    assert.isFalse(await driver.exists('foo.txt'))
+    assert.isFalse(await driver.exists(fileName))
   }).timeout(6000)
 
   test("return false when a file parent directory doesn't exists", async (assert) => {
@@ -257,9 +269,10 @@ test.group('S3 driver | exists', () => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    assert.isFalse(await driver.exists('bar/baz/foo.txt'))
+    assert.isFalse(await driver.exists(fileName))
   }).timeout(6000)
 
   test('raise exception when credentials are incorrect', async (assert) => {
@@ -299,12 +312,13 @@ test.group('S3 driver | delete', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('bar/baz/foo.txt', 'bar')
-    await driver.delete('bar/baz/foo.txt')
+    await driver.put(fileName, 'bar')
+    await driver.delete(fileName)
 
-    assert.isFalse(await driver.exists('bar/baz/foo.txt'))
+    assert.isFalse(await driver.exists(fileName))
   }).timeout(6000)
 
   test('do not error when trying to remove a non-existing file', async (assert) => {
@@ -317,10 +331,11 @@ test.group('S3 driver | delete', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.delete('foo.txt')
-    assert.isFalse(await driver.exists('foo.txt'))
+    await driver.delete(fileName)
+    assert.isFalse(await driver.exists(fileName))
   }).timeout(6000)
 
   test("do not error when file parent directory doesn't exists", async (assert) => {
@@ -333,11 +348,12 @@ test.group('S3 driver | delete', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.delete('bar/baz/foo.txt')
-    assert.isFalse(await driver.exists('bar/baz/foo.txt'))
+    await driver.delete(fileName)
+    assert.isFalse(await driver.exists(fileName))
   }).timeout(6000)
 })
 
@@ -356,17 +372,19 @@ test.group('S3 driver | copy', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
+    const fileName1 = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.put('foo.txt', 'hello world')
-    await driver.copy('foo.txt', 'bar.txt')
+    await driver.put(fileName, 'hello world')
+    await driver.copy(fileName, fileName1)
 
-    const contents = await driver.get('bar.txt')
+    const contents = await driver.get(fileName1)
     assert.equal(contents.toString(), 'hello world')
 
-    await driver.delete('foo.txt')
-    await driver.delete('bar.txt')
+    await driver.delete(fileName)
+    await driver.delete(fileName1)
   }).timeout(6000)
 
   test('create intermediate directories when copying a file', async (assert) => {
@@ -379,17 +397,19 @@ test.group('S3 driver | copy', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
+    const fileName1 = `baz/${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.put('foo.txt', 'hello world')
-    await driver.copy('foo.txt', 'baz/bar.txt')
+    await driver.put(fileName, 'hello world')
+    await driver.copy(fileName, fileName1)
 
-    const contents = await driver.get('baz/bar.txt')
+    const contents = await driver.get(fileName1)
     assert.equal(contents.toString(), 'hello world')
 
-    await driver.delete('foo.txt')
-    await driver.delete('baz/bar.txt')
+    await driver.delete(fileName)
+    await driver.delete(fileName1)
   }).timeout(6000)
 
   test("return error when source doesn't exists", async (assert) => {
@@ -427,18 +447,20 @@ test.group('S3 driver | copy', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
+    const fileName1 = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.put('foo.txt', 'hello world')
-    await driver.put('bar.txt', 'hi world')
-    await driver.copy('foo.txt', 'bar.txt')
+    await driver.put(fileName, 'hello world')
+    await driver.put(fileName1, 'hi world')
+    await driver.copy(fileName, fileName1)
 
-    const contents = await driver.get('bar.txt')
+    const contents = await driver.get(fileName1)
     assert.equal(contents.toString(), 'hello world')
 
-    await driver.delete('foo.txt')
-    await driver.delete('bar.txt')
+    await driver.delete(fileName)
+    await driver.delete(fileName1)
   }).timeout(6000)
 
   test('retain source acl during copy', async (assert) => {
@@ -451,17 +473,19 @@ test.group('S3 driver | copy', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
+    const fileName1 = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.put('foo.txt', 'hello world', { visibility: 'public' })
-    await driver.copy('foo.txt', 'bar.txt')
+    await driver.put(fileName, 'hello world', { visibility: 'public' })
+    await driver.copy(fileName, fileName1)
 
-    const visibility = await driver.getVisibility('bar.txt')
+    const visibility = await driver.getVisibility(fileName1)
     assert.equal(visibility, 'public')
 
-    await driver.delete('foo.txt')
-    await driver.delete('bar.txt')
+    await driver.delete(fileName)
+    await driver.delete(fileName1)
   }).timeout(6000)
 
   test('retain source content-type during copy', async (assert) => {
@@ -474,19 +498,21 @@ test.group('S3 driver | copy', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
+    const fileName1 = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.put('foo.txt', 'hello world', { contentType: 'application/json' })
-    await driver.copy('foo.txt', 'bar.txt')
+    await driver.put(fileName, 'hello world', { contentType: 'application/json' })
+    await driver.copy(fileName, fileName1)
 
     const metaData = await driver.adapter.send(
-      new HeadObjectCommand({ Key: 'bar.txt', Bucket: AWS_BUCKET })
+      new HeadObjectCommand({ Key: fileName1, Bucket: AWS_BUCKET })
     )
     assert.equal(metaData.ContentType, 'application/json')
 
-    await driver.delete('foo.txt')
-    await driver.delete('bar.txt')
+    await driver.delete(fileName)
+    await driver.delete(fileName1)
   }).timeout(6000)
 })
 
@@ -505,17 +531,19 @@ test.group('S3 driver | move', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
+    const fileName1 = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.put('foo.txt', 'hello world')
-    await driver.move('foo.txt', 'bar.txt')
+    await driver.put(fileName, 'hello world')
+    await driver.move(fileName, fileName1)
 
-    const contents = await driver.get('bar.txt')
+    const contents = await driver.get(fileName1)
     assert.equal(contents.toString(), 'hello world')
-    assert.isFalse(await driver.exists('foo.txt'))
+    assert.isFalse(await driver.exists(fileName))
 
-    await driver.delete('bar.txt')
+    await driver.delete(fileName1)
   }).timeout(6000)
 
   test('create intermediate directories when moving a file', async (assert) => {
@@ -528,17 +556,19 @@ test.group('S3 driver | move', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
+    const fileName1 = `baz/${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.put('foo.txt', 'hello world')
-    await driver.move('foo.txt', 'baz/bar.txt')
+    await driver.put(fileName, 'hello world')
+    await driver.move(fileName, fileName1)
 
-    const contents = await driver.get('baz/bar.txt')
+    const contents = await driver.get(fileName1)
     assert.equal(contents.toString(), 'hello world')
-    assert.isFalse(await driver.exists('foo.txt'))
+    assert.isFalse(await driver.exists(fileName))
 
-    await driver.delete('baz/bar.txt')
+    await driver.delete(fileName1)
   }).timeout(6000)
 
   test("return error when source doesn't exists", async (assert) => {
@@ -576,18 +606,20 @@ test.group('S3 driver | move', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
+    const fileName1 = `baz/${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.put('foo.txt', 'hello world')
-    await driver.put('baz/bar.txt', 'hi world')
+    await driver.put(fileName, 'hello world')
+    await driver.put(fileName1, 'hi world')
 
-    await driver.move('foo.txt', 'baz/bar.txt')
+    await driver.move(fileName, fileName1)
 
-    const contents = await driver.get('baz/bar.txt')
+    const contents = await driver.get(fileName1)
     assert.equal(contents.toString(), 'hello world')
 
-    await driver.delete('baz/bar.txt')
+    await driver.delete(fileName1)
   }).timeout(6000)
 
   test('retain source acl during move', async (assert) => {
@@ -600,16 +632,18 @@ test.group('S3 driver | move', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
+    const fileName1 = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.put('foo.txt', 'hello world', { visibility: 'public' })
-    await driver.move('foo.txt', 'bar.txt')
+    await driver.put(fileName, 'hello world', { visibility: 'public' })
+    await driver.move(fileName, fileName1)
 
-    const visibility = await driver.getVisibility('bar.txt')
+    const visibility = await driver.getVisibility(fileName1)
     assert.equal(visibility, 'public')
 
-    await driver.delete('bar.txt')
+    await driver.delete(fileName1)
   }).timeout(6000)
 
   test('retain source content-type during move', async (assert) => {
@@ -622,18 +656,20 @@ test.group('S3 driver | move', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
+    const fileName1 = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
 
-    await driver.put('foo.txt', 'hello world', { contentType: 'application/json' })
-    await driver.move('foo.txt', 'bar.txt')
+    await driver.put(fileName, 'hello world', { contentType: 'application/json' })
+    await driver.move(fileName, fileName1)
 
     const metaData = await driver.adapter.send(
-      new HeadObjectCommand({ Key: 'bar.txt', Bucket: AWS_BUCKET })
+      new HeadObjectCommand({ Key: fileName1, Bucket: AWS_BUCKET })
     )
     assert.equal(metaData.ContentType, 'application/json')
 
-    await driver.delete('bar.txt')
+    await driver.delete(fileName1)
   }).timeout(6000)
 })
 
@@ -652,14 +688,15 @@ test.group('S3 driver | get', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('foo.txt', 'hello world')
+    await driver.put(fileName, 'hello world')
 
-    const contents = await driver.get('foo.txt')
+    const contents = await driver.get(fileName)
     assert.equal(contents.toString(), 'hello world')
 
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('get file contents as a stream', async (assert, done) => {
@@ -674,12 +711,13 @@ test.group('S3 driver | get', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('foo.txt', 'hello world')
+    await driver.put(fileName, 'hello world')
 
-    const stream = await driver.getStream('foo.txt')
-    await driver.delete('foo.txt')
+    const stream = await driver.getStream(fileName)
+    await driver.delete(fileName)
 
     stream.on('data', (chunk) => {
       assert.equal(chunk, 'hello world')
@@ -726,15 +764,16 @@ test.group('S3 driver | getStats', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('foo.txt', 'hello world')
+    await driver.put(fileName, 'hello world')
 
-    const stats = await driver.getStats('foo.txt')
+    const stats = await driver.getStats(fileName)
     assert.equal(stats.size, 11)
     assert.instanceOf(stats.modified, Date)
 
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('return error when file is missing', async (assert) => {
@@ -778,14 +817,15 @@ test.group('S3 driver | getVisibility', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('foo.txt', 'hello world')
+    await driver.put(fileName, 'hello world')
 
-    const visibility = await driver.getVisibility('foo.txt')
+    const visibility = await driver.getVisibility(fileName)
     assert.equal(visibility, 'private')
 
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('get visibility for public file', async (assert) => {
@@ -798,14 +838,15 @@ test.group('S3 driver | getVisibility', (group) => {
       driver: 's3' as const,
       visibility: 'public' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('foo.txt', 'hello world')
+    await driver.put(fileName, 'hello world')
 
-    const visibility = await driver.getVisibility('foo.txt')
+    const visibility = await driver.getVisibility(fileName)
     assert.equal(visibility, 'public')
 
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('return error when file is missing', async (assert) => {
@@ -849,15 +890,16 @@ test.group('S3 driver | setVisibility', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('foo.txt', 'hello world')
-    assert.equal(await driver.getVisibility('foo.txt'), 'private')
+    await driver.put(fileName, 'hello world')
+    assert.equal(await driver.getVisibility(fileName), 'private')
 
-    await driver.setVisibility('foo.txt', 'public')
-    assert.equal(await driver.getVisibility('foo.txt'), 'public')
+    await driver.setVisibility(fileName, 'public')
+    assert.equal(await driver.getVisibility(fileName), 'public')
 
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('return error when file is missing', async (assert) => {
@@ -901,15 +943,16 @@ test.group('S3 driver | getUrl', (group) => {
       driver: 's3' as const,
       visibility: 'public' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('foo.txt', 'hello world')
+    await driver.put(fileName, 'hello world')
 
-    const url = await driver.getUrl('foo.txt')
+    const url = await driver.getUrl(fileName)
     const response = await got.get(url)
     assert.equal(response.body, 'hello world')
 
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('deny access to private files', async (assert) => {
@@ -924,11 +967,12 @@ test.group('S3 driver | getUrl', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('foo.txt', 'hello world')
+    await driver.put(fileName, 'hello world')
 
-    const url = await driver.getUrl('foo.txt')
+    const url = await driver.getUrl(fileName)
 
     try {
       await got.get(url)
@@ -940,7 +984,7 @@ test.group('S3 driver | getUrl', (group) => {
   }).timeout(6000)
 })
 
-test.group('Local driver | getSignedUrl', (group) => {
+test.group('S3 driver | getSignedUrl', (group) => {
   group.afterEach(async () => {
     await fs.cleanup()
   })
@@ -957,20 +1001,21 @@ test.group('Local driver | getSignedUrl', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('foo.txt', 'hello world')
+    await driver.put(fileName, 'hello world')
 
     try {
-      await got.get(await driver.getUrl('foo.txt'))
+      await got.get(await driver.getUrl(fileName))
     } catch (error) {
       assert.equal(error.response.statusCode, 403)
     }
 
-    const response = await got.get(await driver.getSignedUrl('foo.txt'))
+    const response = await got.get(await driver.getSignedUrl(fileName))
     assert.equal(response.body, 'hello world')
 
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('define custom content headers for the file', async (assert) => {
@@ -983,12 +1028,13 @@ test.group('Local driver | getSignedUrl', (group) => {
       driver: 's3' as const,
       visibility: 'private' as const,
     }
+    const fileName = `${string.generateRandom(10)}.txt`
 
     const driver = new S3Driver(config)
-    await driver.put('foo.txt', 'hello world')
+    await driver.put(fileName, 'hello world')
 
     const response = await got.get(
-      await driver.getSignedUrl('foo.txt', {
+      await driver.getSignedUrl(fileName, {
         contentType: 'application/json',
         contentDisposition: 'attachment',
       })
@@ -997,6 +1043,6 @@ test.group('Local driver | getSignedUrl', (group) => {
     assert.equal(response.headers['content-type'], 'application/json')
     assert.equal(response.headers['content-disposition'], 'attachment')
     assert.equal(response.body, 'hello world')
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 })
