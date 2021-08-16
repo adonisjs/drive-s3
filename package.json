@@ -89,5 +89,9 @@
   "bugs": {
     "url": "https://github.com/adonisjs/drive-s3/issues"
   },
-  "homepage": "https://github.com/adonisjs/drive-s3#readme"
+  "homepage": "https://github.com/adonisjs/drive-s3#readme",
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest"
+  }
 }
