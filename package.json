@@ -9,6 +9,7 @@
     "build/src",
     "build/providers"
   ],
+  "types": "build/adonis-typings/index.d.ts",
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
@@ -67,7 +68,11 @@
       "S3_BUCKET": "",
       "S3_REGION": "",
       "S3_ENDPOINT": ""
-    }
+    },
+    "types": "@adonisjs/drive-s3",
+    "providers": [
+      "@adonisjs/drive-s3"
+    ]
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.26.0",
