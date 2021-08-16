@@ -16,9 +16,9 @@ S3_ENDPOINT: Env.schema.string.optional(),
 
 ## Update `contracts/drive.ts` file
 
-Next, you must inform the TypeScript static compiler about your own disk that will be using the s3 driver.
+Next, you must inform the TypeScript static compiler about the disk that will be using the s3 driver.
 
-Open the `contracts/drive.ts` file and paste the following inside it.
+Open the `contracts/drive.ts` file and paste the following code snippet inside it.
 
 ```ts
 declare module '@ioc:Adonis/Core/Drive' {
@@ -34,9 +34,9 @@ declare module '@ioc:Adonis/Core/Drive' {
 
 ## Define config
 
-Once you define the disk inside the contracts file. The TypeScript will automatically validate the drive config file and will force to define the config for the disk.
+Once you define the disk inside the contracts file. The TypeScript will automatically validate the drive config file and will force you to define the config for the disk as well.
 
-So just open the `config/drive.ts` and follow the compile instructions.
+Open the `config/drive.ts` and paste the following code snippet inside it.
 
 ```ts
 {
