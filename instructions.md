@@ -23,11 +23,11 @@ Open the `contracts/drive.ts` file and paste the following code snippet inside i
 ```ts
 declare module '@ioc:Adonis/Core/Drive' {
   interface DisksList {
-	  // ... other disks
-	  s3: {
-		  config: S3DriverConfig
-		  implementation: S3DriverContract
-	  }
+    // ... other disks
+    s3: {
+      config: S3DriverConfig
+      implementation: S3DriverContract
+    }
   }
 }
 ```
@@ -40,17 +40,17 @@ Open the `config/drive.ts` and paste the following code snippet inside it.
 
 ```ts
 {
-	disks: {
-		// ... other disk
-		s3: {
-			driver: 's3',
-			visibility: 'private',
-	    key: Env.get('S3_KEY'),
-	    secret: Env.get('S3_SECRET'),
+  disks: {
+    // ... other disk
+    s3: {
+      driver: 's3',
+      visibility: 'private',
+      key: Env.get('S3_KEY'),
+      secret: Env.get('S3_SECRET'),
       region: Env.get('S3_REGION'),
       bucket: Env.get('S3_BUCKET'),
       endpoint: Env.get('S3_ENDPOINT'),
-		}
-	}
+    }
+  }
 }
 ```
