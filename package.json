@@ -73,5 +73,21 @@
     "@aws-sdk/client-s3": "^3.26.0",
     "@aws-sdk/s3-request-presigner": "^3.26.0",
     "get-stream": "^6.0.1"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adonisjs/drive-s3.git"
+  },
+  "keywords": [
+    "adonisjs",
+    "adonis-drive",
+    "s3"
+  ],
+  "bugs": {
+    "url": "https://github.com/adonisjs/drive-s3/issues"
+  },
+  "homepage": "https://github.com/adonisjs/drive-s3#readme"
 }
