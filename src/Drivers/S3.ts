@@ -7,14 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { join } from 'path'
 import { format } from 'url'
 import getStream from 'get-stream'
-import { createReadStream } from 'fs'
-import { slash } from '@poppinss/utils'
-import { cuid } from '@poppinss/utils/build/helpers'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { MultipartFileContract } from '@ioc:Adonis/Core/BodyParser'
 
 import {
   CannotCopyFileException,
@@ -32,6 +27,7 @@ import {
   ContentHeaders,
   S3DriverConfig,
   S3DriverContract,
+  DriveFileStats,
 } from '@ioc:Adonis/Core/Drive'
 
 import {
@@ -219,7 +215,7 @@ export class S3Driver implements S3DriverContract {
   /**
    * Returns the file stats
    */
-  public async getStats(location: string): Promise<{ size: number; modified: Date }> {
+  public async getStats(location: string): Promise<DriveFileStats> {
     try {
       const stats = await this.adapter.send(
         new HeadObjectCommand({
@@ -231,6 +227,8 @@ export class S3Driver implements S3DriverContract {
       return {
         modified: stats.LastModified!,
         size: stats.ContentLength!,
+        isFile: true,
+        etag: stats.ETag,
       }
     } catch (error) {
       throw CannotGetMetaDataException.invoke(location, 'stats', error)
@@ -292,34 +290,6 @@ export class S3Driver implements S3DriverContract {
     } catch (error) {
       throw CannotWriteFileException.invoke(location, error)
     }
-  }
-
-  /**
-   * Put a file from the local disk or the bodyparser file to the
-   * drive. The return value is always a unix path.
-   */
-  public async putFile(
-    file: MultipartFileContract,
-    destination?: string,
-    options?: WriteOptions & {
-      name?: string
-    }
-  ): Promise<string> {
-    options = options || {}
-
-    /**
-     * Set the file content type
-     */
-    if (file.type && file.subtype && !options.contentType) {
-      options.contentType = `${file.type}/${file.subtype}`
-    }
-
-    const fileName = options.name || `${cuid()}.${file.extname}`
-    const filePath = slash(join(destination || './', fileName))
-
-    await this.putStream(filePath, createReadStream(file.tmpPath!), options)
-    file.markAsMoved(filePath, await this.getUrl(filePath))
-    return filePath
   }
 
   /**
