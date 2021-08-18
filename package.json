@@ -63,11 +63,11 @@
   "adonisjs": {
     "instructionsMd": "./build/instructions.md",
     "env": {
-      "S3_KEY": "",
-      "S3_SECRET": "",
-      "S3_BUCKET": "",
-      "S3_REGION": "",
-      "S3_ENDPOINT": ""
+      "S3_KEY": "dummyKey",
+      "S3_SECRET": "dummySecret",
+      "S3_BUCKET": "dummyBucket",
+      "S3_REGION": "dummyRegion",
+      "S3_ENDPOINT": "dummyEndpoint"
     },
     "types": "@adonisjs/drive-s3",
     "providers": [
