@@ -86,7 +86,7 @@ export class S3Driver implements S3DriverContract {
       contentEncoding,
       contentLanguage,
       ...adapterOptions
-    } = options || { visibility: this.config.visibility }
+    } = Object.assign({ visibility: this.config.visibility }, options)
 
     if (contentType) {
       adapterOptions['ContentType'] = contentType
