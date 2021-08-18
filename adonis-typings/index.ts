@@ -17,6 +17,7 @@ declare module '@ioc:Adonis/Core/Drive' {
     driver: 's3'
     visibility: Visibility
     bucket: string
+    cdnUrl?: string
     key?: string
     secret?: string
   }

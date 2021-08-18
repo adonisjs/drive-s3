@@ -260,8 +260,14 @@ export class S3Driver implements S3DriverContract {
    * Returns URL to a given path
    */
   public async getUrl(location: string): Promise<string> {
-    const href = format(await this.adapter.config.endpoint())
+    /**
+     * Use the CDN URL if defined
+     */
+    if (this.config.cdnUrl) {
+      return `${this.config.cdnUrl}/${location}`
+    }
 
+    const href = format(await this.adapter.config.endpoint())
     if (href.startsWith('https://s3.amazonaws')) {
       return `https://${this.config.bucket}.s3.amazonaws.com/${location}`
     }
