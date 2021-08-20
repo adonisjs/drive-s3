@@ -717,11 +717,16 @@ test.group('S3 driver | get', (group) => {
     await driver.put(fileName, 'hello world')
 
     const stream = await driver.getStream(fileName)
-    await driver.delete(fileName)
 
     stream.on('data', (chunk) => {
       assert.equal(chunk, 'hello world')
+    })
+    stream.on('end', async () => {
+      await driver.delete(fileName)
       done()
+    })
+    stream.on('error', (error) => {
+      done(error)
     })
   }).timeout(6000)
 
