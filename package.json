@@ -79,6 +79,9 @@
     "@aws-sdk/s3-request-presigner": "^3.26.0",
     "get-stream": "^6.0.1"
   },
+  "peerDependencies": {
+    "@adonisjs/core": "^5.0.0"
+  },
   "directories": {
     "test": "test"
   },
