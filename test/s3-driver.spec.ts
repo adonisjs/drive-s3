@@ -46,7 +46,7 @@ test.group('S3 driver | put', () => {
     const contents = await driver.get(fileName)
     assert.equal(contents.toString(), 'hello world')
 
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 
   test('write to nested path', async (assert) => {
@@ -749,8 +749,6 @@ test.group('S3 driver | get', (group) => {
     } catch (error) {
       assert.equal(error.message, 'E_CANNOT_READ_FILE: Cannot read file from location "foo.txt"')
     }
-
-    await driver.delete('foo.txt')
   }).timeout(6000)
 })
 
@@ -795,13 +793,14 @@ test.group('S3 driver | getStats', (group) => {
     }
 
     const driver = new S3Driver(config)
+    const fileName = `${string.generateRandom(10)}.txt`
 
     try {
-      await driver.getStats('foo.txt')
+      await driver.getStats(fileName)
     } catch (error) {
       assert.equal(
         error.message,
-        'E_CANNOT_GET_METADATA: Unable to retrieve the "stats" for file at location "foo.txt"'
+        `E_CANNOT_GET_METADATA: Unable to retrieve the "stats" for file at location "${fileName}"`
       )
     }
   }).timeout(6000)
@@ -868,13 +867,14 @@ test.group('S3 driver | getVisibility', (group) => {
     }
 
     const driver = new S3Driver(config)
+    const fileName = `${string.generateRandom(10)}.txt`
 
     try {
-      await driver.getVisibility('foo.txt')
+      await driver.getVisibility(fileName)
     } catch (error) {
       assert.equal(
         error.message,
-        'E_CANNOT_GET_METADATA: Unable to retrieve the "visibility" for file at location "foo.txt"'
+        `E_CANNOT_GET_METADATA: Unable to retrieve the "visibility" for file at location "${fileName}"`
       )
     }
   }).timeout(6000)
@@ -921,13 +921,14 @@ test.group('S3 driver | setVisibility', (group) => {
     }
 
     const driver = new S3Driver(config)
+    const fileName = `${string.generateRandom(10)}.txt`
 
     try {
-      await driver.setVisibility('foo.txt', 'public')
+      await driver.setVisibility(fileName, 'public')
     } catch (error) {
       assert.equal(
         error.message,
-        'E_CANNOT_SET_VISIBILITY: Unable to set visibility for file at location "foo.txt"'
+        `E_CANNOT_SET_VISIBILITY: Unable to set visibility for file at location "${fileName}"`
       )
     }
   }).timeout(6000)
@@ -985,7 +986,7 @@ test.group('S3 driver | getUrl', (group) => {
       assert.equal(error.response.statusCode, 403)
     }
 
-    await driver.delete('foo.txt')
+    await driver.delete(fileName)
   }).timeout(6000)
 })
 
@@ -1038,12 +1039,12 @@ test.group('S3 driver | getSignedUrl', (group) => {
     const driver = new S3Driver(config)
     await driver.put(fileName, 'hello world')
 
-    const response = await got.get(
-      await driver.getSignedUrl(fileName, {
-        contentType: 'application/json',
-        contentDisposition: 'attachment',
-      })
-    )
+    const signedUrl = await driver.getSignedUrl(fileName, {
+      contentType: 'application/json',
+      contentDisposition: 'attachment',
+    })
+
+    const response = await got.get(signedUrl)
 
     assert.equal(response.headers['content-type'], 'application/json')
     assert.equal(response.headers['content-disposition'], 'attachment')
