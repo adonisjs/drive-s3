@@ -1,6 +1,6 @@
 {
   "name": "@adonisjs/drive-s3",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "S3 driver for AdonisJS drive",
   "main": "build/providers/S3Provider.js",
   "files": [
