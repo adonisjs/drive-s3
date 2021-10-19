@@ -9,6 +9,7 @@
 
 import { format } from 'url'
 import getStream from 'get-stream'
+import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 import {
@@ -61,7 +62,7 @@ export class S3Driver implements S3DriverContract {
    */
   private publicGrantUri = 'http://acs.amazonaws.com/groups/global/AllUsers'
 
-  constructor(private config: S3DriverConfig) {
+  constructor(private config: S3DriverConfig, private logger: LoggerContract) {
     /**
      * Use the top level key and secret to define AWS credentials
      */
@@ -110,6 +111,7 @@ export class S3Driver implements S3DriverContract {
       adapterOptions.ACL = 'private'
     }
 
+    this.logger.trace(adapterOptions, '@drive/s3 write options')
     return adapterOptions
   }
 
@@ -141,6 +143,7 @@ export class S3Driver implements S3DriverContract {
       contentHeaders['ResponseCacheControl'] = cacheControl
     }
 
+    this.logger.trace(contentHeaders, '@drive/s3 content headers')
     return contentHeaders
   }
 

@@ -11,11 +11,14 @@ import got from 'got'
 import test from 'japa'
 import dotenv from 'dotenv'
 import { join } from 'path'
+import { Logger } from '@adonisjs/logger/build/index'
 import { Filesystem } from '@poppinss/dev-utils'
 import { HeadObjectCommand } from '@aws-sdk/client-s3'
 import { string } from '@poppinss/utils/build/helpers'
 
 import { S3Driver } from '../src/Drivers/S3'
+
+const logger = new Logger({ enabled: true, name: 'adonisjs', level: 'info' })
 
 const fs = new Filesystem(join(__dirname, '__app'))
 dotenv.config()
@@ -38,7 +41,7 @@ test.group('S3 driver | put', () => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.getUrl(fileName)
@@ -61,7 +64,7 @@ test.group('S3 driver | put', () => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const contents = await driver.get(fileName)
@@ -82,7 +85,7 @@ test.group('S3 driver | put', () => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'hello world')
     await driver.put(fileName, 'hi world')
 
@@ -104,7 +107,7 @@ test.group('S3 driver | put', () => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, '{ "hello": "world" }', {
       contentType: 'application/json',
@@ -136,7 +139,7 @@ test.group('S3 driver | putStream', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await fs.add('foo.txt', 'hello stream')
     const stream = fs.fsExtra.createReadStream(join(fs.basePath, 'foo.txt'))
     await driver.putStream(fileName, stream)
@@ -159,7 +162,7 @@ test.group('S3 driver | putStream', (group) => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await fs.add('foo.txt', 'hello stream')
     const stream = fs.fsExtra.createReadStream(join(fs.basePath, 'foo.txt'))
     await driver.putStream(fileName, stream)
@@ -182,7 +185,7 @@ test.group('S3 driver | putStream', (group) => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await fs.add('foo.txt', 'hi stream')
     const stream = fs.fsExtra.createReadStream(join(fs.basePath, 'foo.txt'))
     await driver.put(fileName, 'hello world')
@@ -206,7 +209,7 @@ test.group('S3 driver | putStream', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await fs.add('foo.txt', '{ "hello": "world" }')
     const stream = fs.fsExtra.createReadStream(join(fs.basePath, 'foo.txt'))
     await driver.putStream(fileName, stream, {
@@ -235,7 +238,7 @@ test.group('S3 driver | exists', () => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, 'bar')
     assert.isTrue(await driver.exists(fileName))
@@ -255,7 +258,7 @@ test.group('S3 driver | exists', () => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     assert.isFalse(await driver.exists(fileName))
   }).timeout(6000)
 
@@ -271,7 +274,7 @@ test.group('S3 driver | exists', () => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     assert.isFalse(await driver.exists(fileName))
   }).timeout(6000)
 
@@ -288,7 +291,7 @@ test.group('S3 driver | exists', () => {
       visibility: 'private' as const,
     }
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     try {
       await driver.exists('bar/baz/foo.txt')
     } catch (error) {
@@ -314,7 +317,7 @@ test.group('S3 driver | delete', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'bar')
     await driver.delete(fileName)
 
@@ -333,7 +336,7 @@ test.group('S3 driver | delete', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.delete(fileName)
     assert.isFalse(await driver.exists(fileName))
   }).timeout(6000)
@@ -350,7 +353,7 @@ test.group('S3 driver | delete', (group) => {
     }
     const fileName = `bar/baz/${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.delete(fileName)
     assert.isFalse(await driver.exists(fileName))
@@ -375,7 +378,7 @@ test.group('S3 driver | copy', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.copy(fileName, fileName1)
@@ -400,7 +403,7 @@ test.group('S3 driver | copy', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `baz/${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.copy(fileName, fileName1)
@@ -425,7 +428,7 @@ test.group('S3 driver | copy', (group) => {
       visibility: 'private' as const,
     }
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     try {
       await driver.copy('foo.txt', 'bar.txt')
@@ -450,7 +453,7 @@ test.group('S3 driver | copy', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.put(fileName1, 'hi world')
@@ -476,7 +479,7 @@ test.group('S3 driver | copy', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, 'hello world', { visibility: 'public' })
     await driver.copy(fileName, fileName1)
@@ -501,7 +504,7 @@ test.group('S3 driver | copy', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, 'hello world', { contentType: 'application/json' })
     await driver.copy(fileName, fileName1)
@@ -534,7 +537,7 @@ test.group('S3 driver | move', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.move(fileName, fileName1)
@@ -559,7 +562,7 @@ test.group('S3 driver | move', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `baz/${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.move(fileName, fileName1)
@@ -584,7 +587,7 @@ test.group('S3 driver | move', (group) => {
       visibility: 'private' as const,
     }
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     try {
       await driver.move('foo.txt', 'baz/bar.txt')
@@ -609,7 +612,7 @@ test.group('S3 driver | move', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `baz/${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, 'hello world')
     await driver.put(fileName1, 'hi world')
@@ -635,7 +638,7 @@ test.group('S3 driver | move', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, 'hello world', { visibility: 'public' })
     await driver.move(fileName, fileName1)
@@ -659,7 +662,7 @@ test.group('S3 driver | move', (group) => {
     const fileName = `${string.generateRandom(10)}.txt`
     const fileName1 = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     await driver.put(fileName, 'hello world', { contentType: 'application/json' })
     await driver.move(fileName, fileName1)
@@ -690,7 +693,7 @@ test.group('S3 driver | get', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const contents = await driver.get(fileName)
@@ -713,7 +716,7 @@ test.group('S3 driver | get', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const stream = await driver.getStream(fileName)
@@ -742,7 +745,7 @@ test.group('S3 driver | get', (group) => {
       visibility: 'private' as const,
     }
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
 
     try {
       await driver.get('foo.txt')
@@ -769,7 +772,7 @@ test.group('S3 driver | getStats', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const stats = await driver.getStats(fileName)
@@ -792,7 +795,7 @@ test.group('S3 driver | getStats', (group) => {
       visibility: 'private' as const,
     }
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     const fileName = `${string.generateRandom(10)}.txt`
 
     try {
@@ -823,7 +826,7 @@ test.group('S3 driver | getVisibility', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const visibility = await driver.getVisibility(fileName)
@@ -844,7 +847,7 @@ test.group('S3 driver | getVisibility', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const visibility = await driver.getVisibility(fileName)
@@ -866,7 +869,7 @@ test.group('S3 driver | getVisibility', (group) => {
       visibility: 'private' as const,
     }
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     const fileName = `${string.generateRandom(10)}.txt`
 
     try {
@@ -897,7 +900,7 @@ test.group('S3 driver | setVisibility', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'hello world')
     assert.equal(await driver.getVisibility(fileName), 'private')
 
@@ -920,7 +923,7 @@ test.group('S3 driver | setVisibility', (group) => {
       visibility: 'private' as const,
     }
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     const fileName = `${string.generateRandom(10)}.txt`
 
     try {
@@ -951,7 +954,7 @@ test.group('S3 driver | getUrl', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const url = await driver.getUrl(fileName)
@@ -975,7 +978,7 @@ test.group('S3 driver | getUrl', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const url = await driver.getUrl(fileName)
@@ -1009,7 +1012,7 @@ test.group('S3 driver | getSignedUrl', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'hello world')
 
     try {
@@ -1036,7 +1039,7 @@ test.group('S3 driver | getSignedUrl', (group) => {
     }
     const fileName = `${string.generateRandom(10)}.txt`
 
-    const driver = new S3Driver(config)
+    const driver = new S3Driver(config, logger)
     await driver.put(fileName, 'hello world')
 
     const signedUrl = await driver.getSignedUrl(fileName, {

@@ -14,10 +14,13 @@ export default class S3Provider {
   constructor(protected app: ApplicationContract) {}
 
   public boot() {
-    this.app.container.withBindings(['Adonis/Core/Drive'], (Drive) => {
-      Drive.extend('s3', (_, __, config) => {
-        return new S3Driver(config)
-      })
-    })
+    this.app.container.withBindings(
+      ['Adonis/Core/Drive', 'Adonis/Core/Logger'],
+      (Drive, Logger) => {
+        Drive.extend('s3', (_, __, config) => {
+          return new S3Driver(config, Logger)
+        })
+      }
+    )
   }
 }
