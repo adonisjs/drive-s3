@@ -86,6 +86,7 @@ export class S3Driver implements S3DriverContract {
       contentDisposition,
       contentEncoding,
       contentLanguage,
+      cacheControl,
       ...adapterOptions
     } = Object.assign({ visibility: this.config.visibility }, options)
 
@@ -103,6 +104,10 @@ export class S3Driver implements S3DriverContract {
 
     if (contentLanguage) {
       adapterOptions['ContentLanguage'] = contentLanguage
+    }
+
+    if (cacheControl) {
+      adapterOptions['CacheControl'] = cacheControl
     }
 
     if (visibility === 'public') {
