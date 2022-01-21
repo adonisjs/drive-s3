@@ -325,7 +325,7 @@ export class S3Driver implements S3DriverContract {
     }
   ): Promise<void> {
     try {
-      options = Object.assign(options, {})
+      options = Object.assign({}, options)
 
       /**
        * Upload as multipart stream
