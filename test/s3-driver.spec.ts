@@ -7,20 +7,23 @@
  * file that was distributed with this source code.
  */
 
+import 'reflect-metadata'
+
 import got from 'got'
 import test from 'japa'
 import dotenv from 'dotenv'
 import { join } from 'path'
+import supertest from 'supertest'
+import { createServer } from 'http'
 import { Logger } from '@adonisjs/logger/build/index'
-import { Filesystem } from '@poppinss/dev-utils'
-import { HeadObjectCommand } from '@aws-sdk/client-s3'
 import { string } from '@poppinss/utils/build/helpers'
+import { HeadObjectCommand } from '@aws-sdk/client-s3'
 
 import { S3Driver } from '../src/Drivers/S3'
+import { setupApplication, fs } from '../test-helpers'
 
 const logger = new Logger({ enabled: true, name: 'adonisjs', level: 'info' })
 
-const fs = new Filesystem(join(__dirname, '__app'))
 dotenv.config()
 
 const AWS_KEY = process.env.AWS_KEY!
@@ -220,6 +223,107 @@ test.group('S3 driver | putStream', (group) => {
       new HeadObjectCommand({ Key: fileName, Bucket: AWS_BUCKET })
     )
     assert.equal(response.ContentType, 'application/json')
+
+    await driver.delete(fileName)
+  }).timeout(6000)
+})
+
+test.group('S3 driver | multipartStream', (group) => {
+  group.afterEach(async () => {
+    await fs.cleanup()
+  })
+
+  test('write file to the destination', async (assert) => {
+    const config = {
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
+      driver: 's3' as const,
+      visibility: 'private' as const,
+    }
+
+    const fileName = `${string.generateRandom(10)}.json`
+    const driver = new S3Driver(config, logger)
+
+    const app = await setupApplication()
+    const Route = app.container.resolveBinding('Adonis/Core/Route')
+    const Server = app.container.resolveBinding('Adonis/Core/Server')
+
+    Server.middleware.register([
+      async () => {
+        return {
+          default: app.container.resolveBinding('Adonis/Core/BodyParser'),
+        }
+      },
+    ])
+
+    Route.post('/', async ({ request }) => {
+      request.multipart.onFile('package', {}, async (part, reportChunk) => {
+        part.pause()
+        part.on('data', reportChunk)
+        await driver.putStream(fileName, part, { multipart: true, queueSize: 2 })
+      })
+
+      await request.multipart.process()
+    })
+
+    Server.optimize()
+
+    const server = createServer(Server.handle.bind(Server))
+    await supertest(server).post('/').attach('package', join(__dirname, '..', 'package.json'))
+
+    const contents = await driver.get(fileName)
+    assert.equal(
+      contents.toString(),
+      await fs.fsExtra.readFile(join(__dirname, '..', 'package.json'), 'utf-8')
+    )
+
+    await driver.delete(fileName)
+  }).timeout(6000)
+
+  test('cleanup stream when validation fails', async (assert) => {
+    const config = {
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: 'sgp1',
+      driver: 's3' as const,
+      visibility: 'private' as const,
+    }
+
+    const fileName = `${string.generateRandom(10)}.json`
+    const driver = new S3Driver(config, logger)
+
+    const app = await setupApplication()
+    const Route = app.container.resolveBinding('Adonis/Core/Route')
+    const Server = app.container.resolveBinding('Adonis/Core/Server')
+
+    Server.middleware.register([
+      async () => {
+        return {
+          default: app.container.resolveBinding('Adonis/Core/BodyParser'),
+        }
+      },
+    ])
+
+    Route.post('/', async ({ request }) => {
+      request.multipart.onFile('package', { extnames: ['png'] }, async (part, reportChunk) => {
+        part.pause()
+        part.on('data', reportChunk)
+        await driver.putStream(fileName, part, { multipart: true, queueSize: 2 })
+      })
+
+      await request.multipart.process()
+      assert.isTrue(request.file('package')?.hasErrors)
+    })
+
+    Server.optimize()
+
+    const server = createServer(Server.handle.bind(Server))
+    await supertest(server).post('/').attach('package', join(__dirname, '..', 'package.json'))
 
     await driver.delete(fileName)
   }).timeout(6000)

@@ -9,6 +9,7 @@
 
 import { format } from 'url'
 import getStream from 'get-stream'
+import { Upload } from '@aws-sdk/lib-storage'
 import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
@@ -32,6 +33,7 @@ import {
 } from '@ioc:Adonis/Core/Drive'
 
 import {
+  Tag,
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
@@ -313,9 +315,45 @@ export class S3Driver implements S3DriverContract {
   public async putStream(
     location: string,
     contents: NodeJS.ReadableStream,
-    options?: WriteOptions
+    options?: WriteOptions & {
+      multipart?: boolean
+      queueSize?: number
+      partSize?: number
+      leavePartsOnError?: boolean
+      tags?: Tag[]
+      tap?: (stream: Upload) => void
+    }
   ): Promise<void> {
     try {
+      options = Object.assign(options, {})
+
+      /**
+       * Upload as multipart stream
+       */
+      if (options.multipart) {
+        const { tap, queueSize, partSize, leavePartsOnError, tags, ...others } = options
+        const upload = new Upload({
+          params: {
+            Key: location,
+            Body: contents,
+            Bucket: this.config.bucket,
+            ...this.transformWriteOptions(others),
+          },
+          queueSize,
+          partSize,
+          leavePartsOnError,
+          tags,
+          client: this.adapter,
+        })
+
+        if (typeof tap === 'function') {
+          tap(upload)
+        }
+
+        await upload.done()
+        return
+      }
+
       await this.adapter.send(
         new PutObjectCommand({
           Key: location,
