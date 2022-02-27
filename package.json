@@ -13,7 +13,7 @@
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
-    "test": "node -r ts-node/register/transpile-only .bin/test.ts",
+    "test": "node -r @adonisjs/require-ts/build/register ./bin/test.ts",
     "clean": "del-cli build",
     "compile": "npm run lint && npm run clean && tsc && copyfiles instructions.md build",
     "build": "npm run compile",
@@ -28,22 +28,22 @@
   "author": "virk,adonisjs",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/core": "^5.4.2",
+    "@adonisjs/core": "^5.5.0",
     "@adonisjs/mrm-preset": "^5.0.2",
-    "@adonisjs/require-ts": "^2.0.9",
+    "@adonisjs/require-ts": "^2.0.10",
     "@japa/assert": "^1.2.3",
     "@japa/run-failed-tests": "^1.0.3",
     "@japa/runner": "^1.2.0",
     "@japa/spec-reporter": "^1.1.7",
-    "@poppinss/dev-utils": "^2.0.1",
-    "@types/node": "^17.0.10",
+    "@poppinss/dev-utils": "^2.0.2",
+    "@types/node": "^17.0.21",
     "commitizen": "^4.2.4",
     "copyfiles": "^2.4.1",
     "cz-conventional-changelog": "^3.3.0",
     "del-cli": "^4.0.1",
-    "dotenv": "^14.2.0",
-    "eslint": "^8.7.0",
-    "eslint-config-prettier": "^8.3.0",
+    "dotenv": "^16.0.0",
+    "eslint": "^8.10.0",
+    "eslint-config-prettier": "^8.4.0",
     "eslint-plugin-adonis": "^2.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "github-label-sync": "^2.0.2",
@@ -54,8 +54,7 @@
     "prettier": "^2.5.1",
     "reflect-metadata": "^0.1.13",
     "supertest": "^6.2.2",
-    "ts-node": "^10.5.0",
-    "typescript": "^4.5.4"
+    "typescript": "^4.5.5"
   },
   "config": {
     "commitizen": {
@@ -81,9 +80,9 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.47.0",
-    "@aws-sdk/lib-storage": "^3.47.0",
-    "@aws-sdk/s3-request-presigner": "^3.47.0",
+    "@aws-sdk/client-s3": "^3.53.1",
+    "@aws-sdk/lib-storage": "^3.53.1",
+    "@aws-sdk/s3-request-presigner": "^3.53.1",
     "get-stream": "^6.0.1"
   },
   "peerDependencies": {

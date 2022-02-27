@@ -10,10 +10,10 @@
 import 'reflect-metadata'
 
 import got from 'got'
-import { test } from '@japa/runner'
 import dotenv from 'dotenv'
 import { join } from 'path'
 import supertest from 'supertest'
+import { test } from '@japa/runner'
 import { createServer } from 'http'
 import { Logger } from '@adonisjs/logger/build/index'
 import { string } from '@poppinss/utils/build/helpers'
@@ -806,7 +806,7 @@ test.group('S3 driver | get', (group) => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('get file contents as a stream', async (assert, done) => {
+  test('get file contents as a stream', async ({ assert }, done) => {
     assert.plan(1)
 
     const config = {
@@ -835,7 +835,9 @@ test.group('S3 driver | get', (group) => {
     stream.on('error', (error) => {
       done(error)
     })
-  }).timeout(6000)
+  })
+    .timeout(6000)
+    .waitForDone()
 
   test("return error when file doesn't exists", async ({ assert }) => {
     assert.plan(1)
