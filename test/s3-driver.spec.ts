@@ -10,7 +10,7 @@
 import 'reflect-metadata'
 
 import got from 'got'
-import test from 'japa'
+import { test } from '@japa/runner'
 import dotenv from 'dotenv'
 import { join } from 'path'
 import supertest from 'supertest'
@@ -32,7 +32,7 @@ const AWS_BUCKET = process.env.AWS_BUCKET!
 const AWS_ENDPOINT = process.env.AWS_ENDPOINT!
 
 test.group('S3 driver | put', () => {
-  test('write file to the destination', async (assert) => {
+  test('write file to the destination', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -55,7 +55,7 @@ test.group('S3 driver | put', () => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('write to nested path', async (assert) => {
+  test('write to nested path', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -76,7 +76,7 @@ test.group('S3 driver | put', () => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('overwrite destination when already exists', async (assert) => {
+  test('overwrite destination when already exists', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -98,7 +98,7 @@ test.group('S3 driver | put', () => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('set custom content-type for the file', async (assert) => {
+  test('set custom content-type for the file', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -126,11 +126,11 @@ test.group('S3 driver | put', () => {
 })
 
 test.group('S3 driver | putStream', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('write file to the destination', async (assert) => {
+  test('write file to the destination', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -153,7 +153,7 @@ test.group('S3 driver | putStream', (group) => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('write to nested path', async (assert) => {
+  test('write to nested path', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -176,7 +176,7 @@ test.group('S3 driver | putStream', (group) => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('overwrite destination when already exists', async (assert) => {
+  test('overwrite destination when already exists', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -200,7 +200,7 @@ test.group('S3 driver | putStream', (group) => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('set custom content-type for the file', async (assert) => {
+  test('set custom content-type for the file', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -229,11 +229,11 @@ test.group('S3 driver | putStream', (group) => {
 })
 
 test.group('S3 driver | multipartStream', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('write file to the destination', async (assert) => {
+  test('write file to the destination', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -283,7 +283,7 @@ test.group('S3 driver | multipartStream', (group) => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('cleanup stream when validation fails', async (assert) => {
+  test('cleanup stream when validation fails', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -330,7 +330,7 @@ test.group('S3 driver | multipartStream', (group) => {
 })
 
 test.group('S3 driver | exists', () => {
-  test('return true when a file exists', async (assert) => {
+  test('return true when a file exists', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -350,7 +350,7 @@ test.group('S3 driver | exists', () => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test("return false when a file doesn't exists", async (assert) => {
+  test("return false when a file doesn't exists", async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -366,7 +366,7 @@ test.group('S3 driver | exists', () => {
     assert.isFalse(await driver.exists(fileName))
   }).timeout(6000)
 
-  test("return false when a file parent directory doesn't exists", async (assert) => {
+  test("return false when a file parent directory doesn't exists", async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -382,7 +382,7 @@ test.group('S3 driver | exists', () => {
     assert.isFalse(await driver.exists(fileName))
   }).timeout(6000)
 
-  test('raise exception when credentials are incorrect', async (assert) => {
+  test('raise exception when credentials are incorrect', async ({ assert }) => {
     assert.plan(1)
 
     const config = {
@@ -405,11 +405,11 @@ test.group('S3 driver | exists', () => {
 })
 
 test.group('S3 driver | delete', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('remove file', async (assert) => {
+  test('remove file', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -428,7 +428,7 @@ test.group('S3 driver | delete', (group) => {
     assert.isFalse(await driver.exists(fileName))
   }).timeout(6000)
 
-  test('do not error when trying to remove a non-existing file', async (assert) => {
+  test('do not error when trying to remove a non-existing file', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -445,7 +445,7 @@ test.group('S3 driver | delete', (group) => {
     assert.isFalse(await driver.exists(fileName))
   }).timeout(6000)
 
-  test("do not error when file parent directory doesn't exists", async (assert) => {
+  test("do not error when file parent directory doesn't exists", async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -465,11 +465,11 @@ test.group('S3 driver | delete', (group) => {
 })
 
 test.group('S3 driver | copy', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('copy file from within the disk root', async (assert) => {
+  test('copy file from within the disk root', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -494,7 +494,7 @@ test.group('S3 driver | copy', (group) => {
     await driver.delete(fileName1)
   }).timeout(6000)
 
-  test('create intermediate directories when copying a file', async (assert) => {
+  test('create intermediate directories when copying a file', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -519,7 +519,7 @@ test.group('S3 driver | copy', (group) => {
     await driver.delete(fileName1)
   }).timeout(6000)
 
-  test("return error when source doesn't exists", async (assert) => {
+  test("return error when source doesn't exists", async ({ assert }) => {
     assert.plan(1)
 
     const config = {
@@ -544,7 +544,7 @@ test.group('S3 driver | copy', (group) => {
     }
   }).timeout(6000)
 
-  test('overwrite destination when already exists', async (assert) => {
+  test('overwrite destination when already exists', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -570,7 +570,7 @@ test.group('S3 driver | copy', (group) => {
     await driver.delete(fileName1)
   }).timeout(6000)
 
-  test('retain source acl during copy', async (assert) => {
+  test('retain source acl during copy', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -595,7 +595,7 @@ test.group('S3 driver | copy', (group) => {
     await driver.delete(fileName1)
   }).timeout(6000)
 
-  test('retain source content-type during copy', async (assert) => {
+  test('retain source content-type during copy', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -624,11 +624,11 @@ test.group('S3 driver | copy', (group) => {
 })
 
 test.group('S3 driver | move', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('move file from within the disk root', async (assert) => {
+  test('move file from within the disk root', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -653,7 +653,7 @@ test.group('S3 driver | move', (group) => {
     await driver.delete(fileName1)
   }).timeout(6000)
 
-  test('create intermediate directories when moving a file', async (assert) => {
+  test('create intermediate directories when moving a file', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -678,7 +678,7 @@ test.group('S3 driver | move', (group) => {
     await driver.delete(fileName1)
   }).timeout(6000)
 
-  test("return error when source doesn't exists", async (assert) => {
+  test("return error when source doesn't exists", async ({ assert }) => {
     assert.plan(1)
 
     const config = {
@@ -703,7 +703,7 @@ test.group('S3 driver | move', (group) => {
     }
   }).timeout(6000)
 
-  test('overwrite destination when already exists', async (assert) => {
+  test('overwrite destination when already exists', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -729,7 +729,7 @@ test.group('S3 driver | move', (group) => {
     await driver.delete(fileName1)
   }).timeout(6000)
 
-  test('retain source acl during move', async (assert) => {
+  test('retain source acl during move', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -753,7 +753,7 @@ test.group('S3 driver | move', (group) => {
     await driver.delete(fileName1)
   }).timeout(6000)
 
-  test('retain source content-type during move', async (assert) => {
+  test('retain source content-type during move', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -781,11 +781,11 @@ test.group('S3 driver | move', (group) => {
 })
 
 test.group('S3 driver | get', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get file contents', async (assert) => {
+  test('get file contents', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -837,7 +837,7 @@ test.group('S3 driver | get', (group) => {
     })
   }).timeout(6000)
 
-  test("return error when file doesn't exists", async (assert) => {
+  test("return error when file doesn't exists", async ({ assert }) => {
     assert.plan(1)
     const config = {
       key: AWS_KEY,
@@ -860,11 +860,11 @@ test.group('S3 driver | get', (group) => {
 })
 
 test.group('S3 driver | getStats', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get file stats', async (assert) => {
+  test('get file stats', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -886,7 +886,7 @@ test.group('S3 driver | getStats', (group) => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('return error when file is missing', async (assert) => {
+  test('return error when file is missing', async ({ assert }) => {
     assert.plan(1)
 
     const config = {
@@ -914,11 +914,11 @@ test.group('S3 driver | getStats', (group) => {
 })
 
 test.group('S3 driver | getVisibility', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get visibility for private file', async (assert) => {
+  test('get visibility for private file', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -939,7 +939,7 @@ test.group('S3 driver | getVisibility', (group) => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('get visibility for public file', async (assert) => {
+  test('get visibility for public file', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -960,7 +960,7 @@ test.group('S3 driver | getVisibility', (group) => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('return error when file is missing', async (assert) => {
+  test('return error when file is missing', async ({ assert }) => {
     assert.plan(1)
 
     const config = {
@@ -988,11 +988,11 @@ test.group('S3 driver | getVisibility', (group) => {
 })
 
 test.group('S3 driver | setVisibility', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('set file visibility', async (assert) => {
+  test('set file visibility', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -1014,7 +1014,7 @@ test.group('S3 driver | setVisibility', (group) => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('return error when file is missing', async (assert) => {
+  test('return error when file is missing', async ({ assert }) => {
     assert.plan(1)
 
     const config = {
@@ -1042,11 +1042,11 @@ test.group('S3 driver | setVisibility', (group) => {
 })
 
 test.group('S3 driver | getUrl', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get url to a given file', async (assert) => {
+  test('get url to a given file', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
@@ -1068,7 +1068,7 @@ test.group('S3 driver | getUrl', (group) => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('deny access to private files', async (assert) => {
+  test('deny access to private files', async ({ assert }) => {
     assert.plan(1)
 
     const config = {
@@ -1098,11 +1098,11 @@ test.group('S3 driver | getUrl', (group) => {
 })
 
 test.group('S3 driver | getSignedUrl', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('get signed url to a file in private disk', async (assert) => {
+  test('get signed url to a file in private disk', async ({ assert }) => {
     assert.plan(2)
 
     const config = {
@@ -1131,7 +1131,7 @@ test.group('S3 driver | getSignedUrl', (group) => {
     await driver.delete(fileName)
   }).timeout(6000)
 
-  test('define custom content headers for the file', async (assert) => {
+  test('define custom content headers for the file', async ({ assert }) => {
     const config = {
       key: AWS_KEY,
       secret: AWS_SECRET,
