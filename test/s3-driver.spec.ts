@@ -21,6 +21,7 @@ import { HeadObjectCommand } from '@aws-sdk/client-s3'
 
 import { S3Driver } from '../src/Drivers/S3'
 import { setupApplication, fs } from '../test-helpers'
+import { URL } from 'url'
 
 const logger = new Logger({ enabled: true, name: 'adonisjs', level: 'info' })
 
@@ -1159,5 +1160,28 @@ test.group('S3 driver | getSignedUrl', (group) => {
     assert.equal(response.headers['content-disposition'], 'attachment')
     assert.equal(response.body, 'hello world')
     await driver.delete(fileName)
+  }).timeout(6000)
+
+  test('get signed url with expiration', async ({ assert }) => {
+    const config = {
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      region: 'eu-west-3', //todo change
+      driver: 's3' as const,
+      visibility: 'private' as const,
+    }
+    const fileName = `${string.generateRandom(10)}.txt`
+
+    const driver = new S3Driver(config, logger)
+
+    const signedUrl = await driver.getSignedUrl(fileName, {
+      expiresIn: '2min',
+    })
+
+    const url = new URL(signedUrl)
+    const expiresResult = url.searchParams.get('X-Amz-Expires')
+
+    assert.equal(expiresResult, '120')
   }).timeout(6000)
 })
