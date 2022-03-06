@@ -1167,7 +1167,7 @@ test.group('S3 driver | getSignedUrl', (group) => {
       key: AWS_KEY,
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
-      region: 'eu-west-3', //todo change
+      region: 'sgp1',
       driver: 's3' as const,
       visibility: 'private' as const,
     }
