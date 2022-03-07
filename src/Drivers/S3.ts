@@ -10,6 +10,7 @@
 import { format } from 'url'
 import getStream from 'get-stream'
 import { Upload } from '@aws-sdk/lib-storage'
+import { string } from '@poppinss/utils/build/helpers'
 import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
@@ -246,7 +247,7 @@ export class S3Driver implements S3DriverContract {
   }
 
   /**
-   * Not supported
+   * Returns the signed url for a given path
    */
   public async getSignedUrl(
     location: string,
@@ -259,7 +260,10 @@ export class S3Driver implements S3DriverContract {
           Key: location,
           Bucket: this.config.bucket,
           ...this.transformContentHeaders(options),
-        })
+        }),
+        {
+          expiresIn: string.toMs(options?.expiresIn || '15min') / 1000,
+        }
       )
     } catch (error) {
       throw CannotGetMetaDataException.invoke(location, 'signedUrl', error)
