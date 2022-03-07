@@ -30,6 +30,7 @@ const AWS_KEY = process.env.AWS_KEY!
 const AWS_SECRET = process.env.AWS_SECRET!
 const AWS_BUCKET = process.env.AWS_BUCKET!
 const AWS_ENDPOINT = process.env.AWS_ENDPOINT!
+const AWS_REGION = process.env.AWS_REGION || 'sgp1'
 
 test.group('S3 driver | put', () => {
   test('write file to the destination', async ({ assert }) => {
@@ -38,7 +39,7 @@ test.group('S3 driver | put', () => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -61,7 +62,7 @@ test.group('S3 driver | put', () => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -82,7 +83,7 @@ test.group('S3 driver | put', () => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -104,7 +105,7 @@ test.group('S3 driver | put', () => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -136,7 +137,7 @@ test.group('S3 driver | putStream', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -159,7 +160,7 @@ test.group('S3 driver | putStream', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -182,7 +183,7 @@ test.group('S3 driver | putStream', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -206,7 +207,7 @@ test.group('S3 driver | putStream', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -239,7 +240,7 @@ test.group('S3 driver | multipartStream', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -289,7 +290,7 @@ test.group('S3 driver | multipartStream', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -336,7 +337,7 @@ test.group('S3 driver | exists', () => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -356,7 +357,7 @@ test.group('S3 driver | exists', () => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -372,7 +373,7 @@ test.group('S3 driver | exists', () => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -390,7 +391,7 @@ test.group('S3 driver | exists', () => {
       secret: 'bar',
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -415,7 +416,7 @@ test.group('S3 driver | delete', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -434,7 +435,7 @@ test.group('S3 driver | delete', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -451,7 +452,7 @@ test.group('S3 driver | delete', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -475,7 +476,7 @@ test.group('S3 driver | copy', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -500,7 +501,7 @@ test.group('S3 driver | copy', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -527,7 +528,7 @@ test.group('S3 driver | copy', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -550,7 +551,7 @@ test.group('S3 driver | copy', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -576,7 +577,7 @@ test.group('S3 driver | copy', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -601,7 +602,7 @@ test.group('S3 driver | copy', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -634,7 +635,7 @@ test.group('S3 driver | move', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -659,7 +660,7 @@ test.group('S3 driver | move', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -686,7 +687,7 @@ test.group('S3 driver | move', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -709,7 +710,7 @@ test.group('S3 driver | move', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -735,7 +736,7 @@ test.group('S3 driver | move', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -759,7 +760,7 @@ test.group('S3 driver | move', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -791,7 +792,7 @@ test.group('S3 driver | get', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -814,7 +815,7 @@ test.group('S3 driver | get', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -846,7 +847,7 @@ test.group('S3 driver | get', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -872,7 +873,7 @@ test.group('S3 driver | getStats', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -896,7 +897,7 @@ test.group('S3 driver | getStats', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -926,7 +927,7 @@ test.group('S3 driver | getVisibility', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -947,7 +948,7 @@ test.group('S3 driver | getVisibility', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'public' as const,
     }
@@ -970,7 +971,7 @@ test.group('S3 driver | getVisibility', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -1000,7 +1001,7 @@ test.group('S3 driver | setVisibility', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -1024,7 +1025,7 @@ test.group('S3 driver | setVisibility', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -1054,7 +1055,7 @@ test.group('S3 driver | getUrl', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'public' as const,
     }
@@ -1078,7 +1079,7 @@ test.group('S3 driver | getUrl', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -1112,7 +1113,7 @@ test.group('S3 driver | getSignedUrl', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
@@ -1139,7 +1140,7 @@ test.group('S3 driver | getSignedUrl', (group) => {
       secret: AWS_SECRET,
       bucket: AWS_BUCKET,
       endpoint: AWS_ENDPOINT,
-      region: 'sgp1',
+      region: AWS_REGION,
       driver: 's3' as const,
       visibility: 'private' as const,
     }
