@@ -125,6 +125,29 @@ test.group('S3 driver | put', () => {
     assert.equal(response.ContentType, 'application/json')
     await driver.delete(fileName)
   }).timeout(6000)
+
+  test('switch bucket at runtime', async ({ assert }) => {
+    const config = {
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: 'foo',
+      endpoint: AWS_ENDPOINT,
+      region: AWS_REGION,
+      driver: 's3' as const,
+      visibility: 'private' as const,
+    }
+    const fileName = `${string.generateRandom(10)}.txt`
+
+    const driver = new S3Driver(config, logger)
+
+    await driver.bucket(AWS_BUCKET).put(fileName, 'hello world')
+    await driver.bucket(AWS_BUCKET).getUrl(fileName)
+
+    const contents = await driver.bucket(AWS_BUCKET).get(fileName)
+    assert.equal(contents.toString(), 'hello world')
+
+    await driver.bucket(AWS_BUCKET).delete(fileName)
+  }).timeout(6000)
 })
 
 test.group('S3 driver | putStream', (group) => {

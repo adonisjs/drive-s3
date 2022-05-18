@@ -28,6 +28,12 @@ declare module '@ioc:Adonis/Core/Drive' {
   export interface S3DriverContract extends DriverContract {
     name: 's3'
     adapter: S3Client
+
+    /**
+     * Returns a new instance of the s3 driver with a custom runtime
+     * bucket
+     */
+    bucket(bucket: string): S3DriverContract
   }
 
   interface DriversList {

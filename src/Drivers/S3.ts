@@ -156,6 +156,14 @@ export class S3Driver implements S3DriverContract {
   }
 
   /**
+   * Returns a new instance of the s3 driver with a custom runtime
+   * bucket
+   */
+  public bucket(bucket: string): S3Driver {
+    return new S3Driver(Object.assign({}, this.config, { bucket }), this.logger)
+  }
+
+  /**
    * Returns the file contents as a buffer. The buffer return
    * value allows you to self choose the encoding when
    * converting the buffer to a string.
