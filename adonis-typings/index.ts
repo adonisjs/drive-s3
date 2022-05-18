@@ -29,4 +29,11 @@ declare module '@ioc:Adonis/Core/Drive' {
     name: 's3'
     adapter: S3Client
   }
+
+  interface DriversList {
+    s3: {
+      implementation: S3DriverContract
+      config: S3DriverConfig
+    }
+  }
 }
