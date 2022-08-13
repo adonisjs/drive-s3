@@ -13,6 +13,12 @@ S3_BUCKET: Env.schema.string(),
 S3_REGION: Env.schema.string(),
 S3_ENDPOINT: Env.schema.string.optional(),
 ```
+Update DRIVE_DISK
+```diff
+- DRIVE_DISK: Env.schema.enum(['local'] as const),
++ DRIVE_DISK: Env.schema.enum(['local','s3'] as const),
+```
+
 
 ## Define config
 Open the `config/drive.ts` and paste the following code snippet inside it.
