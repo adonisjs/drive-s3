@@ -186,6 +186,27 @@ export class S3Driver implements S3DriverContract {
       throw CannotReadFileException.invoke(location, error)
     }
   }
+  /**
+   * Returns the ranged file contents as a stream
+   */
+  public async getStreamRange(
+    location: string,
+    { start, end }: Partial<{ start: number; end: number }>
+  ): Promise<NodeJS.ReadableStream> {
+    try {
+      const response = await this.adapter.send(
+        new GetObjectCommand({
+          Key: location,
+          Bucket: this.config.bucket,
+          Range: `bytes=${start || 0}-${end ?? ''}`,
+        })
+      )
+
+      return response.Body
+    } catch (error) {
+      throw CannotReadFileException.invoke(location, error)
+    }
+  }
 
   /**
    * A boolean to find if the location path exists or not

@@ -868,6 +868,39 @@ test.group('S3 driver | get', (group) => {
     .timeout(6000)
     .waitForDone()
 
+  test('get ranged file contents as a stream', async ({ assert }, done) => {
+    assert.plan(1)
+
+    const config = {
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: AWS_REGION,
+      driver: 's3' as const,
+      visibility: 'private' as const,
+    }
+    const fileName = `${string.generateRandom(10)}.txt`
+
+    const driver = new S3Driver(config, logger)
+    await driver.put(fileName, 'hello world')
+
+    const rangeOption = { start: 1, end: 4 }
+    const stream = await driver.getStreamRange(fileName, rangeOption)
+    stream.on('data', (chunk) => {
+      assert.equal(chunk.length, rangeOption.end - rangeOption.start)
+    })
+    stream.on('end', async () => {
+      await driver.delete(fileName)
+      done()
+    })
+    stream.on('error', (error) => {
+      done(error)
+    })
+  })
+    .timeout(6000)
+    .waitForDone()
+
   test("return error when file doesn't exists", async ({ assert }) => {
     assert.plan(1)
     const config = {
