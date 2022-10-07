@@ -16,6 +16,7 @@ import dotenv from 'dotenv'
 import supertest from 'supertest'
 import { test } from '@japa/runner'
 import { createServer } from 'http'
+import { Readable } from 'stream'
 import { Logger } from '@adonisjs/logger/build/index'
 import { string } from '@poppinss/utils/build/helpers'
 import { HeadObjectCommand } from '@aws-sdk/client-s3'
@@ -895,7 +896,7 @@ test.group('S3 driver | get', (group) => {
   }).timeout(6000)
 
   test('get file contents as a stream', async ({ assert }, done) => {
-    assert.plan(1)
+    assert.plan(2)
 
     const config = {
       key: AWS_KEY,
@@ -912,6 +913,7 @@ test.group('S3 driver | get', (group) => {
     await driver.put(fileName, 'hello world')
 
     const stream = await driver.getStream(fileName)
+    assert.instanceOf(stream, Readable)
 
     stream.on('data', (chunk) => {
       assert.equal(chunk, 'hello world')
