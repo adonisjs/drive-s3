@@ -8,6 +8,7 @@
  */
 
 import { format } from 'url'
+import { Readable } from 'stream'
 import getStream from 'get-stream'
 import { Upload } from '@aws-sdk/lib-storage'
 import { string } from '@poppinss/utils/build/helpers'
@@ -180,13 +181,19 @@ export class S3Driver implements S3DriverContract {
   /**
    * Returns the file contents as a stream
    */
-  public async getStream(location: string): Promise<NodeJS.ReadableStream> {
+  public async getStream(location: string): Promise<Readable> {
     try {
       const response = await this.adapter.send(
         new GetObjectCommand({ Key: location, Bucket: this.config.bucket })
       )
 
-      return response.Body
+      /**
+       * The value as per the SDK can be a blob, NodeJS.ReadableStream or Readable stream.
+       * However, at runtime it is always a readable stream.
+       *
+       * There is an open issue on the same https://github.com/aws/aws-sdk-js-v3/issues/3064
+       */
+      return response.Body as Promise<Readable>
     } catch (error) {
       throw CannotReadFileException.invoke(location, error)
     }
