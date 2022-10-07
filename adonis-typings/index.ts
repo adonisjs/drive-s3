@@ -15,7 +15,7 @@ declare module '@ioc:Adonis/Core/Drive' {
    */
   export type S3DriverConfig = S3ClientConfig & {
     driver: 's3'
-    visibility: Visibility
+    visibility?: Visibility
     bucket: string
     cdnUrl?: string
     key?: string
