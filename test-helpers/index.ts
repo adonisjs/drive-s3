@@ -16,7 +16,7 @@ export const fs = new Filesystem(join(__dirname, '__app'))
 /**
  * Setup adonisjs application
  */
-export async function setupApplication() {
+export async function setupApplication(options?: { autoProcessMultipartFiles?: boolean }) {
   const app = new Application(fs.basePath, 'web', {
     providers: ['@adonisjs/core'],
   })
@@ -37,7 +37,7 @@ export async function setupApplication() {
     `export default {
       whitelistedMethods: ['POST', 'PUT', 'PATCH', 'DELETE'],
       multipart: {
-        autoProcess: false,
+        autoProcess: ${options?.autoProcessMultipartFiles || false},
         processManually: [],
         types: [
           'multipart/form-data',

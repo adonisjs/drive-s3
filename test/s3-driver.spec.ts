@@ -10,8 +10,9 @@
 import 'reflect-metadata'
 
 import got from 'got'
-import dotenv from 'dotenv'
+import { URL } from 'url'
 import { join } from 'path'
+import dotenv from 'dotenv'
 import supertest from 'supertest'
 import { test } from '@japa/runner'
 import { createServer } from 'http'
@@ -21,7 +22,6 @@ import { HeadObjectCommand } from '@aws-sdk/client-s3'
 
 import { S3Driver } from '../src/Drivers/S3'
 import { setupApplication, fs } from '../test-helpers'
-import { URL } from 'url'
 
 const logger = new Logger({ enabled: true, name: 'adonisjs', level: 'info' })
 
@@ -253,6 +253,67 @@ test.group('S3 driver | putStream', (group) => {
   }).timeout(6000)
 })
 
+test.group('S3 Drive | moveToDisk', (group) => {
+  group.each.teardown(async () => {
+    await fs.cleanup()
+  })
+
+  test('upload small files', async ({ assert }) => {
+    const config = {
+      key: AWS_KEY,
+      secret: AWS_SECRET,
+      bucket: AWS_BUCKET,
+      endpoint: AWS_ENDPOINT,
+      region: AWS_REGION,
+      driver: 's3' as const,
+      visibility: 'private' as const,
+    }
+
+    const fileName = `${string.generateRandom(10)}.txt`
+    const driver = new S3Driver(config, logger)
+
+    const app = await setupApplication({ autoProcessMultipartFiles: true })
+    const Route = app.container.resolveBinding('Adonis/Core/Route')
+    const Server = app.container.resolveBinding('Adonis/Core/Server')
+
+    Server.middleware.register([
+      async () => {
+        return {
+          default: new (app.container.resolveBinding('Adonis/Core/BodyParser'))(app.config, {
+            use() {
+              return driver
+            },
+          }),
+        }
+      },
+    ])
+
+    Route.post('/', async ({ request }) => {
+      const file = request.file('package')!
+      await file.moveToDisk('./', {
+        name: fileName,
+      })
+    })
+
+    Server.optimize()
+
+    const server = createServer(Server.handle.bind(Server))
+    await supertest(server).post('/').attach('package', Buffer.from('hello world', 'utf-8'), {
+      filename: 'package.txt',
+    })
+
+    const metadata = await driver.adapter.send(
+      new HeadObjectCommand({
+        Key: fileName,
+        Bucket: config.bucket,
+      })
+    )
+
+    assert.equal(metadata.ContentLength, 11)
+    await driver.delete(fileName)
+  }).timeout(6000)
+})
+
 test.group('S3 driver | multipartStream', (group) => {
   group.each.teardown(async () => {
     await fs.cleanup()
@@ -353,9 +414,7 @@ test.group('S3 driver | multipartStream', (group) => {
     } catch {}
 
     await driver.delete(fileName)
-  })
-    .timeout(6000)
-    .pin()
+  }).timeout(6000)
 })
 
 test.group('S3 driver | exists', () => {
