@@ -1274,3 +1274,84 @@ test.group('S3 driver | getSignedUrl', (group) => {
     assert.equal(expiresResult, '120')
   }).timeout(6000)
 })
+
+test.group('S3 driver | list', (group) => {
+  group.tap((t) => t.timeout(6000))
+
+  const files = ['foo.txt', 'bar/baz/foo.txt', 'foo/bar.js', 'dir/a.txt', 'dir/b.js', 'dir/c.png']
+  const createFiles = (driver: S3Driver) => Promise.all(files.map((file) => driver.put(file, file)))
+  const cleanupFiles = (driver: S3Driver) => () =>
+    Promise.all(files.map((file) => driver.delete(file)))
+
+  test('list directory contents in "{path}"')
+    .with([
+      { path: '.', contents: { 'foo.txt': true, 'bar': false, 'foo': false, 'dir': false } },
+      { path: 'dir', contents: { 'dir/a.txt': true, 'dir/b.js': true, 'dir/c.png': true } },
+      { path: 'bar/baz', contents: { 'bar/baz/foo.txt': true } },
+    ])
+    .run(async ({ assert, cleanup }, { path, contents }) => {
+      const config = {
+        key: AWS_KEY,
+        secret: AWS_SECRET,
+        bucket: AWS_BUCKET,
+        endpoint: AWS_ENDPOINT,
+        region: AWS_REGION,
+        driver: 's3' as const,
+        visibility: 'private' as const,
+      }
+
+      const driver = new S3Driver(config, logger)
+
+      await createFiles(driver)
+
+      cleanup(cleanupFiles(driver))
+
+      const list = await driver.list(path).toArray()
+
+      assert.containsSubset(
+        list,
+        Object.entries(contents).map(([location, isFile]) => ({ location, isFile }))
+      )
+    })
+
+  test('list directory contents recursively in "{path}"')
+    .with([
+      {
+        path: '.',
+        contents: {
+          'foo.txt': true,
+          'bar/baz/foo.txt': true,
+          'foo/bar.js': true,
+          'dir/a.txt': true,
+          'dir/b.js': true,
+          'dir/c.png': true,
+        },
+      },
+      { path: 'dir', contents: { 'dir/a.txt': true, 'dir/b.js': true, 'dir/c.png': true } },
+      { path: 'bar', contents: { 'bar/baz/foo.txt': true } },
+    ])
+    .run(async ({ assert, cleanup }, { path, contents }) => {
+      const config = {
+        key: AWS_KEY,
+        secret: AWS_SECRET,
+        bucket: AWS_BUCKET,
+        endpoint: AWS_ENDPOINT,
+        region: AWS_REGION,
+        driver: 's3' as const,
+        visibility: 'private' as const,
+      }
+
+      const driver = new S3Driver(config, logger)
+
+      await createFiles(driver)
+
+      cleanup(cleanupFiles(driver))
+
+      const list = await driver.list(path).recursive().toArray()
+
+      assert.containsSubset(
+        list,
+        Object.entries(contents).map(([location, isFile]) => ({ location, isFile }))
+      )
+    })
+})

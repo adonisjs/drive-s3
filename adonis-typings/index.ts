@@ -8,7 +8,12 @@
  */
 
 declare module '@ioc:Adonis/Core/Drive' {
-  import { S3Client, S3ClientConfig } from '@aws-sdk/client-s3'
+  import {
+    S3Client,
+    S3ClientConfig,
+    CommonPrefix,
+    ListObjectsV2CommandOutput,
+  } from '@aws-sdk/client-s3'
 
   /**
    * Configuration accepted by the s3 driver
@@ -20,7 +25,16 @@ declare module '@ioc:Adonis/Core/Drive' {
     cdnUrl?: string
     key?: string
     secret?: string
+    prefix?: string
   }
+
+  /**
+   * List item returned from local disk driver
+   */
+  export interface S3DriveListItem
+    extends DriveListItem<
+      Required<ListObjectsV2CommandOutput>['Contents'][number] | CommonPrefix
+    > {}
 
   /**
    * The S3 driver implementation interface
@@ -34,6 +48,12 @@ declare module '@ioc:Adonis/Core/Drive' {
      * bucket
      */
     bucket(bucket: string): S3DriverContract
+
+    /**
+     * Return a listing directory iterator for given location.
+     * @experimental
+     */
+    list(location: string): DirectoryListingContract<this, S3DriveListItem>
   }
 
   interface DriversList {

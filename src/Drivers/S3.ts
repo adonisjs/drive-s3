@@ -23,6 +23,9 @@ import {
   CannotDeleteFileException,
   CannotGetMetaDataException,
   CannotSetVisibilityException,
+  PathPrefixer,
+  DirectoryListing,
+  CannotListDirectoryException,
 } from '@adonisjs/core/build/standalone'
 
 import {
@@ -32,6 +35,8 @@ import {
   S3DriverConfig,
   S3DriverContract,
   DriveFileStats,
+  DirectoryListingContract,
+  S3DriveListItem,
 } from '@ioc:Adonis/Core/Drive'
 
 import {
@@ -45,6 +50,8 @@ import {
   PutObjectAclCommand,
   GetObjectAclCommand,
   GetObjectCommandInput,
+  ListObjectsV2CommandInput,
+  ListObjectsV2Command,
 } from '@aws-sdk/client-s3'
 
 /**
@@ -65,6 +72,11 @@ export class S3Driver implements S3DriverContract {
    * The URI for the grant applicable to public
    */
   private publicGrantUri = 'http://acs.amazonaws.com/groups/global/AllUsers'
+
+  /**
+   * Path prefixer used for prefixing locations with prefix from config
+   */
+  private prefixer = new PathPrefixer(this.config.prefix || '')
 
   constructor(private config: S3DriverConfig, private logger: LoggerContract) {
     /**
@@ -464,5 +476,53 @@ export class S3Driver implements S3DriverContract {
     } catch (error) {
       throw CannotMoveFileException.invoke(source, destination, error.original || error)
     }
+  }
+
+  /**
+   * Return a listing directory iterator for given location.
+   */
+  public list(location: string): DirectoryListingContract<this, S3DriveListItem> {
+    const prefix = this.prefixer.prefixDirectoryPath(location)
+
+    return new DirectoryListing(this, async function* () {
+      const input: ListObjectsV2CommandInput = {
+        Bucket: this.config.bucket,
+        // TODO: prefixDirectoryPath should return empty string when listing root of bucket
+        // https://github.com/adonisjs/drive/pull/49
+        Prefix: prefix === '/' ? '' : prefix,
+        Delimiter: this.prefixer.separator,
+        MaxKeys: 1000,
+      }
+
+      while (true) {
+        try {
+          const response = await this.adapter.send(new ListObjectsV2Command(input))
+
+          for (const file of response.Contents || []) {
+            yield {
+              location: this.prefixer.stripPrefix(file.Key!),
+              isFile: true,
+              original: file,
+            }
+          }
+
+          for (const dir of response.CommonPrefixes || []) {
+            yield {
+              location: this.prefixer.stripPrefix(dir.Prefix!),
+              isFile: false,
+              original: dir,
+            }
+          }
+
+          if (!response.IsTruncated) {
+            break
+          }
+
+          input.ContinuationToken = response.NextContinuationToken
+        } catch (error) {
+          throw CannotListDirectoryException.invoke(location, error)
+        }
+      }
+    })
   }
 }
