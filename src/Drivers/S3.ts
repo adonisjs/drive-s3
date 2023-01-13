@@ -301,7 +301,7 @@ export class S3Driver implements S3DriverContract {
       return `${this.config.cdnUrl}/${location}`
     }
 
-    const href = format(await this.adapter.config.endpoint())
+    const href = format((await this.adapter.config?.endpoint?.()) || '')
     if (href.startsWith('https://s3.amazonaws')) {
       return `https://${this.config.bucket}.s3.amazonaws.com/${location}`
     }
