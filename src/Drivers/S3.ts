@@ -185,7 +185,7 @@ export class S3Driver implements S3DriverContract {
       }
     )
 
-    this.logger.trace(`Resolved endpoint ${url}`)
+    this.logger.trace(url, 'Resolved endpoint')
     return url.url.toString()
   }
 
