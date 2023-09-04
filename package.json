@@ -13,8 +13,8 @@
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
-    "test": "npm run vscode:test",
-    "vscode:test": "node -r @adonisjs/require-ts/build/register bin/test.ts",
+    "test": "npm run quick:test",
+    "quick:test": "node -r @adonisjs/require-ts/build/register bin/test.ts",
     "clean": "del-cli build",
     "compile": "npm run lint && npm run clean && tsc && copyfiles instructions.md build",
     "build": "npm run compile",
@@ -46,16 +46,16 @@
     "eslint": "^8.48.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-adonis": "^2.1.1",
-    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-prettier": "^4.2.1",
     "github-label-sync": "^2.3.1",
     "got": "^11.8.2",
     "husky": "^8.0.3",
     "mrm": "^4.1.17",
     "np": "^8.0.4",
-    "prettier": "^3.0.3",
+    "prettier": "^2.8.8",
     "reflect-metadata": "^0.1.13",
     "supertest": "^6.3.3",
-    "typescript": "^5.2.2"
+    "typescript": "^4.9.5"
   },
   "config": {
     "commitizen": {
@@ -83,6 +83,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.405.0",
     "@aws-sdk/lib-storage": "^3.405.0",
+    "@aws-sdk/middleware-endpoint": "^3.374.0",
     "@aws-sdk/s3-request-presigner": "^3.405.0",
     "get-stream": "^6.0.1"
   },

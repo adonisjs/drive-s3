@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import { format } from 'url'
 import { Readable } from 'stream'
 import getStream from 'get-stream'
 import { Upload } from '@aws-sdk/lib-storage'
@@ -46,6 +45,7 @@ import {
   GetObjectAclCommand,
   GetObjectCommandInput,
 } from '@aws-sdk/client-s3'
+import { getEndpointFromInstructions } from '@aws-sdk/middleware-endpoint'
 
 /**
  * An implementation of the s3 driver for AdonisJS drive
@@ -60,6 +60,12 @@ export class S3Driver implements S3DriverContract {
    * Name of the driver
    */
   public name: 's3' = 's3'
+
+  /**
+   * We cache the bucket URL to avoid resolving it again
+   * and again
+   */
+  private cachedBucketUrl: string
 
   /**
    * The URI for the grant applicable to public
@@ -162,6 +168,28 @@ export class S3Driver implements S3DriverContract {
   }
 
   /**
+   * Returns the URL for the bucket
+   */
+  private async getBucketUrl() {
+    const url = await getEndpointFromInstructions(
+      {
+        Bucket: this.config.bucket,
+      },
+      GetObjectCommand,
+      {
+        endpoint: this.adapter.config.endpoint,
+        endpointProvider: this.adapter.config.endpointProvider,
+        useDualstackEndpoint: this.adapter.config.useDualstackEndpoint,
+        useFipsEndpoint: this.adapter.config.useFipsEndpoint,
+        region: this.adapter.config.region,
+      }
+    )
+
+    this.logger.trace(`Resolved endpoint ${url}`)
+    return url.url.toString()
+  }
+
+  /**
    * Returns a new instance of the s3 driver with a custom runtime
    * bucket
    */
@@ -193,7 +221,7 @@ export class S3Driver implements S3DriverContract {
        *
        * There is an open issue on the same https://github.com/aws/aws-sdk-js-v3/issues/3064
        */
-      return response.Body as Promise<Readable>
+      return response.Body as Readable
     } catch (error) {
       throw CannotReadFileException.invoke(location, error)
     }
@@ -301,12 +329,14 @@ export class S3Driver implements S3DriverContract {
       return `${this.config.cdnUrl}/${location}`
     }
 
-    const href = format(await this.adapter.config.endpoint())
-    if (href.startsWith('https://s3.amazonaws')) {
-      return `https://${this.config.bucket}.s3.amazonaws.com/${location}`
+    /**
+     * Resolve bucket URL
+     */
+    if (!this.cachedBucketUrl) {
+      this.cachedBucketUrl = await this.getBucketUrl()
     }
 
-    return `${href}/${this.config.bucket}/${location}`
+    return `${this.cachedBucketUrl}${location}`
   }
 
   /**
