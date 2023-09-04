@@ -9,6 +9,9 @@
     "build/src",
     "build/providers"
   ],
+  "engines": {
+    "node": ">14.16.0"
+  },
   "types": "build/adonis-typings/index.d.ts",
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
